@@ -4,9 +4,10 @@ import './App.css';
 function App() {
   const [weatherData, setWeatherData] = useState(null);
   const [city, setCity] = useState('New York'); // Initial city value
-  const [date, setDate] = useState('2024-02-20'); // Initial date value
+  const [startDate, setStartDate] = useState('2024-02-20'); // Initial start date value
+  const [endDate, setEndDate] = useState('2024-02-25'); // Initial end date value
   const apiKey = '8bb13baffb874e89a4a74143242702';
-  const apiUrl = `http://api.weatherapi.com/v1/history.json?key=${apiKey}&q=${city}&dt=${date}`;
+  const apiUrl = `http://api.weatherapi.com/v1/history.json?key=${apiKey}&q=${city}&dt=${startDate}&enddate=${endDate}`;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,8 +31,12 @@ function App() {
     setCity(e.target.value);
   };
 
-  const handleDateChange = (e) => {
-    setDate(e.target.value);
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+  };
+
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
   };
 
   return (
@@ -45,21 +50,35 @@ function App() {
         onChange={handleCityChange} 
       />
       <br />
-      <label htmlFor="dateInput">Enter Date:</label>
+      <label htmlFor="startDateInput">Start Date:</label>
       <input 
         type="date" 
-        id="dateInput" 
-        value={date} 
-        onChange={handleDateChange} 
+        id="startDateInput" 
+        value={startDate} 
+        onChange={handleStartDateChange} 
         min="2024-01-01" 
+        max={endDate} 
+      />
+      <br />
+      <label htmlFor="endDateInput">End Date:</label>
+      <input 
+        type="date" 
+        id="endDateInput" 
+        value={endDate} 
+        onChange={handleEndDateChange} 
+        min={startDate} 
         max="2024-12-31" 
       />
       <br />
       {weatherData && weatherData.forecast ? (
         <div>
-          <p>Date: {weatherData.forecast.forecastday[0].date}</p>
-          <p>Average Temperature: {weatherData.forecast.forecastday[0].day.avgtemp_c}°C</p>
-          <p>Condition: {weatherData.forecast.forecastday[0].day.condition.text}</p>
+          {weatherData.forecast.forecastday.map((day, index) => (
+            <div key={index}>
+              <p>Date: {day.date}</p>
+              <p>Average Temperature: {day.day.avgtemp_c}°C</p>
+              <p>Condition: {day.day.condition.text}</p>
+            </div>
+          ))}
         </div>
       ) : (
         <p className="loading">Loading...</p>
